@@ -1,47 +1,58 @@
-import React, { useState, useEffect } from "react";
-import QuestionForm from "./QuestionForm";
-import QuestionList from "./QuestionList";
+import React, { useEffect, useState } from "react";
 
-function App() {
+export default function App() {
   const [questions, setQuestions] = useState([]);
+  const [showQuestions, setShowQuestions] = useState(false);
 
-  // Fetch all questions on mount
   useEffect(() => {
-    fetch("http://localhost:4000/questions")
+    let isMounted = true;
+    fetch("/api/questions")
       .then((res) => res.json())
-      .then(setQuestions);
+      .then((data) => {
+        if (isMounted) setQuestions(data);
+      })
+      .catch(console.error);
+
+    return () => {
+      isMounted = false;
+    };
   }, []);
 
-  // POST: Add new question
-  function handleAddQuestion(newQuestion) {
-    setQuestions([...questions, newQuestion]);
-  }
-
-  // DELETE: Remove a question
-  function handleDeleteQuestion(deletedId) {
-    const updated = questions.filter((q) => q.id !== deletedId);
-    setQuestions(updated);
-  }
-
-  // PATCH: Update a question's correct answer
-  function handleUpdateQuestion(updatedQuestion) {
-    const updated = questions.map((q) =>
-      q.id === updatedQuestion.id ? updatedQuestion : q
-    );
-    setQuestions(updated);
-  }
-
   return (
-    <section>
+    <div>
       <h1>Quiz Admin Panel</h1>
-      <QuestionForm onAddQuestion={handleAddQuestion} />
-      <QuestionList
-        questions={questions}
-        onDeleteQuestion={handleDeleteQuestion}
-        onUpdateQuestion={handleUpdateQuestion}
-      />
-    </section>
+
+      <button onClick={() => setShowQuestions(!showQuestions)}>
+        {showQuestions ? "Hide Questions" : "View Questions"}
+      </button>
+
+      {showQuestions && (
+        <section>
+          <h2>Quiz Questions</h2>
+          <ul>
+            {questions.map((q) => (
+              <li key={q.id}>{q.prompt}</li>
+            ))}
+          </ul>
+        </section>
+      )}
+
+      <section>
+        <h2>New Question</h2>
+        <form
+          onSubmit={(e) => {
+            e.preventDefault();
+            // Form submission logic here (not implemented for brevity)
+          }}
+        >
+          <label>
+            Prompt:
+            <input name="prompt" type="text" />
+          </label>
+          {/* other inputs omitted for brevity */}
+          <button type="submit">Add Question</button>
+        </form>
+      </section>
+    </div>
   );
 }
-
-export default App;
