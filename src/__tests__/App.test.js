@@ -1,5 +1,5 @@
 import { render, screen, fireEvent } from "@testing-library/react";
-import App from "../components/App";
+import App from "../App";
 
 beforeEach(() => {
   global.fetch = jest.fn(() =>
