@@ -3,14 +3,14 @@ import React from "react";
 function QuestionItem({ question, onDeleteQuestion, onUpdateQuestion }) {
   const { id, prompt, answers, correctIndex } = question;
 
-  // ✅ DELETE
+  // DELETE
   function handleDeleteClick() {
     fetch(`http://localhost:4000/questions/${id}`, {
       method: "DELETE",
     }).then(() => onDeleteQuestion(id));
   }
 
-  // ✅ PATCH
+  // PATCH
   function handleChangeCorrectAnswer(e) {
     const newIndex = parseInt(e.target.value, 10);
     fetch(`http://localhost:4000/questions/${id}`, {
